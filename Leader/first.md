@@ -1,4 +1,4 @@
-# Leader Roleplay
+# Leader Roleplay 1
 
 The old soldier, Rashid, sat on the edge of the fountain, the cool marble a familiar comfort to his weary bones. The scent of jasmine hung heavy in the evening air of the Alhambra’s gardens, a sweet perfume that could almost make one forget the scent of steel and smoke. He watched the child—his child now, his Emira’s child—chase a moth fluttering near a lantern. She was one of the two, the foundlings. Her laughter was the sound of Granada’s future, a sound he had sworn his life to protect.
 
