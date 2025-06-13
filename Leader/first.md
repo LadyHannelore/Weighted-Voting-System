@@ -1,4 +1,4 @@
-# Leader Roleplay
+# Leader Roleplay 1
 
 The old soldier, Rashid, sat on the edge of the fountain, the cool marble a familiar comfort to his weary bones. The scent of jasmine hung heavy in the evening air of the Alhambra’s gardens, a sweet perfume that could almost make one forget the scent of steel and smoke. He watched the child—his child now, his Emira’s child—chase a moth fluttering near a lantern. She was one of the two, the foundlings. Her laughter was the sound of Granada’s future, a sound he had sworn his life to protect.
 
@@ -126,10 +126,10 @@ He gestured vaguely south and east. “Letters arrive from the Bey of Tunis and 
 
 Rashid had seen the correspondence. He knew the weight of those words. The King, Moshe, sought to bring the Jews of Iberia home to the holy land, to save them from the coming Christian zealotry.
 
-> “And your mother,” Rashid explained, “in her infinite wisdom, agreed. She saw a truth that transcends borders and faiths. She saw that the fire that threatens the mosque will one day consume the synagogue. She pledged her own navy to protect his people on their journey home. In return, he pledges his kingdom’s wealth and knowledge to help us fortify our walls and guard our libraries. A covenant. A brotherhood of the besieged.”
+“And your mother,” Rashid explained, “in her infinite wisdom, agreed. She saw a truth that transcends borders and faiths. She saw that the fire that threatens the mosque will one day consume the synagogue. She pledged her own navy to protect his people on their journey home. In return, he pledges his kingdom’s wealth and knowledge to help us fortify our walls and guard our libraries. A covenant. A brotherhood of the besieged.”
 
-> He looked back up at the balcony, where the Emira now stared south, across the sea, as if she could see the shores of Africa and the Levant from her garden in Granada.
+He looked back up at the balcony, where the Emira now stared south, across the sea, as if she could see the shores of Africa and the Levant from her garden in Granada.
 
-> “So you see, Yasmina? You ask why I would die for her. It is not just because she saved you, though that would be enough. It is because in a world of brutes and fanatics, she is wise. In a world of chaos and fear, she is just. She fought a war not for glory, but for survival. She showed mercy not from weakness, but from a position of absolute strength. And now, as new threats gather, she does not despair. She builds bridges across the sea, forging alliances not just of convenience, but of shared history and mutual respect.”
+“So you see, Yasmina? You ask why I would die for her. It is not just because she saved you, though that would be enough. It is because in a world of brutes and fanatics, she is wise. In a world of chaos and fear, she is just. She fought a war not for glory, but for survival. She showed mercy not from weakness, but from a position of absolute strength. And now, as new threats gather, she does not despair. She builds bridges across the sea, forging alliances not just of convenience, but of shared history and mutual respect.”
 
-> The old soldier stood up, his back straighter than it had been all evening. “She is the Last Lioness of Andalus. And as long as she watches from that balcony, as long as she leads us, there is hope. Now, come, little princess. It is time for you to sleep. Your mother has a world to guard.”
+The old soldier stood up, his back straighter than it had been all evening. “She is the Last Lioness of Andalus. And as long as she watches from that balcony, as long as she leads us, there is hope. Now, come, little princess. It is time for you to sleep. Your mother has a world to guard.”
