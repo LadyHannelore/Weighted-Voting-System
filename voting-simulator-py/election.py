@@ -3,12 +3,82 @@ from vote_types import VoterProfile, Candidate, Ballot, Results, WeightCoefficie
 
 # Custom single transferable vote style simulator
 def run_election(candidates: List[Candidate], ballots: List[Ballot]) -> Results:
-    # ...existing code...
-    # Implement rounds, tally first preferences, eliminate lowest, transfer votes, etc.
-    # Return final winner and per-round details.
+    """
+    Run a ranked choice (single transferable vote) election.
+    
+    Args:
+        candidates: List of candidate objects
+        ballots: List of voter preferences as ordered lists of candidate IDs
+        
+    Returns:
+        Results object with winner and round-by-round details
+    """
+    if not candidates or not ballots:
+        return Results(winner=None, round_details=[])
+    
+    # Build a lookup for candidates by ID
+    candidate_map = {c.id: c for c in candidates}
+    
+    # Track rounds
+    rounds = []
+    remaining_candidates = set(c.id for c in candidates)
+    
+    # Continue until we have a winner
+    round_num = 1
+    while remaining_candidates and len(remaining_candidates) > 1:
+        # Count first preferences of all valid ballots
+        tallies = {cid: 0 for cid in remaining_candidates}
+        
+        for ballot in ballots:
+            # Find the first preference that's still in the running
+            for choice in ballot:
+                if choice in remaining_candidates:
+                    tallies[choice] += 1
+                    break
+        
+        # Record this round
+        round_detail = {
+            "round": round_num,
+            "tallies": tallies
+        }
+        
+        # Find candidate with lowest votes
+        min_votes = float('inf')
+        to_eliminate = None
+        
+        for cid, votes in tallies.items():
+            if votes < min_votes:
+                min_votes = votes
+                to_eliminate = cid
+        
+        # Check for a majority winner
+        total_votes = sum(tallies.values())
+        for cid, votes in tallies.items():
+            if votes > total_votes / 2:
+                # We have a winner
+                rounds.append(round_detail)
+                return Results(
+                    winner=candidate_map.get(cid),
+                    round_details=rounds
+                )
+        
+        # No winner yet, eliminate lowest candidate
+        if to_eliminate:
+            round_detail["eliminated"] = to_eliminate
+            remaining_candidates.remove(to_eliminate)
+        
+        rounds.append(round_detail)
+        round_num += 1
+    
+    # If we exit the loop, either we have a single candidate left, or we're out of candidates
+    winner = None
+    if remaining_candidates:
+        winner_id = list(remaining_candidates)[0]
+        winner = candidate_map.get(winner_id)
+    
     return Results(
-        winner=None,
-        round_details=[]
+        winner=winner,
+        round_details=rounds
     )
 
 def normalize(x: float, min_val: float, max_val: float) -> float:
