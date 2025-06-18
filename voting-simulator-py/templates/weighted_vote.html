@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weighted Voting Simulation - UK System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .simulation-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .voter-profile-card {
+            border-left: 4px solid #667eea;
+            margin-bottom: 1rem;
+        }
+        .attribute-bar {
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .attribute-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            transition: width 0.3s ease;
+        }
+        .results-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .results-card:hover {
+            transform: translateY(-2px);
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .chart-container {
+            height: 400px;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-vote-yea me-2"></i>
+                UK Weighted Voting System
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link active" href="/weighted-vote">Weighted Voting</a>
+                <a class="nav-link" href="/ranked-choice">Ranked Choice</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="simulation-header">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1 class="display-5 fw-bold">
+                        <i class="fas fa-balance-scale me-3"></i>
+                        Weighted Yes/No Voting Simulation
+                    </h1>
+                    <p class="lead">
+                        Experience how voter expertise, participation, and stake influence policy decisions
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <div class="row">
+            <!-- Control Panel -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>Simulation Controls
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="question" class="form-label">Policy Question</label>
+                            <input type="text" class="form-control" id="question" 
+                                   value="UK Rejoining the EU" placeholder="Enter policy question">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Weighting Systems</label>
+                            <div class="small text-muted mb-2">
+                                This simulation runs three different weighting approaches:
+                            </div>
+                            <ul class="list-unstyled small">
+                                <li><strong>Equal:</strong> All factors weighted equally (20% each)</li>
+                                <li><strong>Expertise:</strong> Knowledge and experience prioritized</li>
+                                <li><strong>Stake:</strong> Personal impact from decision emphasized</li>
+                            </ul>
+                        </div>
+
+                        <button class="btn btn-primary btn-lg w-100" onclick="runSimulation()">
+                            <i class="fas fa-play me-2"></i>Run Simulation
+                        </button>
+
+                        <div class="loading-spinner text-center mt-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div class="mt-2">Running simulation...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voter Profiles -->
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-users me-2"></i>Voter Demographics
+                        </h6>
+                    </div>
+                    <div class="card-body p-2" id="voter-profiles">
+                        <!-- Voter profiles will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="col-lg-8">
+                <div id="results-section" style="display: none;">
+                    <div class="row g-3" id="results-cards">
+                        <!-- Results cards will be generated here -->
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-bar me-2"></i>Visualization
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="showChart('weighted-comparison')">
+                                        <i class="fas fa-chart-column me-1"></i>Vote Comparison
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="showChart('voter-profiles')">
+                                        <i class="fas fa-table me-1"></i>Voter Profiles
+                                    </button>
+                                </div>
+                                <div id="chart-container" class="chart-container">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <div class="text-center">
+                                            <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                            <div>Run a simulation to generate charts</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initial Information -->
+                <div id="info-section">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>About Weighted Voting</h3>
+                            <p>
+                                Traditional "one person, one vote" systems treat all votes equally. 
+                                Weighted voting considers multiple factors that might influence the 
+                                quality and relevance of each vote:
+                            </p>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="card border-primary">
+                                        <div class="card-body">
+                                            <h6 class="text-primary">
+                                                <i class="fas fa-brain me-2"></i>Expertise (E)
+                                            </h6>
+                                            <p class="small mb-0">
+                                                Political knowledge and subject matter understanding
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-success">
+                                        <div class="card-body">
+                                            <h6 class="text-success">
+                                                <i class="fas fa-chart-line me-2"></i>Participation (P)
+                                            </h6>
+                                            <p class="small mb-0">
+                                                Historical voting engagement and civic involvement
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-warning">
+                                        <div class="card-body">
+                                            <h6 class="text-warning">
+                                                <i class="fas fa-target me-2"></i>Decision Quality (D)
+                                            </h6>
+                                            <p class="small mb-0">
+                                                Track record of thoughtful, consistent decisions
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-info">
+                                        <div class="card-body">
+                                            <h6 class="text-info">
+                                                <i class="fas fa-handshake me-2"></i>Alignment (A)
+                                            </h6>
+                                            <p class="small mb-0">
+                                                Consideration of broader public interest
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="card border-danger">
+                                        <div class="card-body">
+                                            <h6 class="text-danger">
+                                                <i class="fas fa-bullseye me-2"></i>Stake (S)
+                                            </h6>
+                                            <p class="small mb-0">
+                                                Personal impact from the decision outcome
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-4">
+                                <h6><i class="fas fa-info-circle me-2"></i>Simulation Details</h6>
+                                <ul class="mb-0">
+                                    <li>Based on 9 UK demographic groups with realistic voting patterns</li>
+                                    <li>Uses normalized weighting formula: W = wE×E + wP×P + wD×D + wA×A + wS×S</li>
+                                    <li>Compares three different coefficient configurations</li>
+                                    <li>Decision threshold: 50% of weighted votes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let simulationData = null;
+
+        async function runSimulation() {
+            const question = document.getElementById('question').value;
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const resultsSection = document.getElementById('results-section');
+            const infoSection = document.getElementById('info-section');
+
+            // Show loading
+            loadingSpinner.style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/run-weighted-vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    simulationData = data;
+                    displayResults(data);
+                    displayVoterProfiles(data.voter_profiles);
+                    
+                    // Show results, hide info
+                    resultsSection.style.display = 'block';
+                    infoSection.style.display = 'none';
+                } else {
+                    alert('Simulation failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error running simulation: ' + error.message);
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('results-cards');
+            const results = data.results;
+            
+            resultsContainer.innerHTML = `
+                ${createResultCard('Equal Weights', results.equal, 'primary')}
+                ${createResultCard('Expertise Focus', results.expertise, 'success')}
+                ${createResultCard('Stake Focus', results.stake, 'warning')}
+            `;
+        }
+
+        function createResultCard(title, result, color) {
+            const resultIcon = result.result === 'PASSED' ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+            
+            return `
+                <div class="col-md-4">
+                    <div class="card results-card">
+                        <div class="card-header bg-${color} text-white">
+                            <h6 class="mb-0">${title}</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <i class="fas ${resultIcon} fa-2x"></i>
+                                <div class="fw-bold mt-2">${result.result}</div>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="text-success fw-bold">${result.yes_percentage.toFixed(1)}%</div>
+                                    <div class="small text-muted">YES</div>
+                                    <div class="small">${result.yes_votes.toFixed(2)} votes</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-danger fw-bold">${result.no_percentage.toFixed(1)}%</div>
+                                    <div class="small text-muted">NO</div>
+                                    <div class="small">${result.no_votes.toFixed(2)} votes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayVoterProfiles(profiles) {
+            const container = document.getElementById('voter-profiles');
+            
+            container.innerHTML = profiles.map(profile => `
+                <div class="voter-profile-card card mb-2">
+                    <div class="card-body p-2">
+                        <div class="fw-bold small">${profile.name}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">${profile.count} voters</div>
+                        <div class="row g-1 mt-1" style="font-size: 0.7rem;">
+                            <div class="col-6">
+                                <div class="d-flex justify-content-between">
+                                    <span>E:</span><span>${profile.expertise}</span>
+                                </div>
+                                <div class="attribute-bar">
+                                    <div class="attribute-fill" style="width: ${profile.expertise * 10}%"></div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex justify-content-between">
+                                    <span>P:</span><span>${profile.participation}</span>
+                                </div>
+                                <div class="attribute-bar">
+                                    <div class="attribute-fill" style="width: ${profile.participation}%"></div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex justify-content-between">
+                                    <span>S:</span><span>${profile.stake}</span>
+                                </div>
+                                <div class="attribute-bar">
+                                    <div class="attribute-fill" style="width: ${profile.stake}%"></div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex justify-content-between">
+                                    <span>A:</span><span>${profile.alignment}</span>
+                                </div>
+                                <div class="attribute-bar">
+                                    <div class="attribute-fill" style="width: ${profile.alignment * 10}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function showChart(chartType) {
+            if (!simulationData) {
+                alert('Please run a simulation first!');
+                return;
+            }
+
+            const chartContainer = document.getElementById('chart-container');
+            chartContainer.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading chart...</span>
+                    </div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`/api/generate-chart/${chartType}`);
+                
+                if (response.ok) {
+                    const chartHtml = await response.text();
+                    chartContainer.innerHTML = `<iframe srcdoc="${chartHtml.replace(/"/g, '&quot;')}" 
+                                                       style="width: 100%; height: 100%; border: none;"></iframe>`;
+                } else {
+                    chartContainer.innerHTML = `
+                        <div class="d-flex align-items-center justify-content-center h-100 text-danger">
+                            <div class="text-center">
+                                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                                <div>Failed to load chart</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                chartContainer.innerHTML = `
+                    <div class="d-flex align-items-center justify-content-center h-100 text-danger">
+                        <div class="text-center">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <div>Error: ${error.message}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

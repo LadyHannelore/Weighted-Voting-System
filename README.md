@@ -26,11 +26,12 @@ Simulate policy decisions with weighted voter profiles based on:
 - Real-time round-by-round elimination with 30-second intervals
 - Supports multiple candidates and complex preference patterns
 
-### 📈 **Interactive Visualizations**
+### **Interactive Visualizations**
 - **Weighted Vote Comparison Charts**: Side-by-side analysis of different weighting systems
 - **Ranked Choice Progression**: Visual timeline of vote transfers and eliminations
 - **Voter Profile Heatmaps**: Demographic attribute analysis across voter groups
 - **First Preferences Distribution**: Initial vote breakdown by party/candidate
+- **🌐 Web Interface**: Modern, responsive web application with real-time simulations
 
 ### 🇬🇧 **Real UK Election Data**
 Based on the 2024 UK General Election featuring:
@@ -39,10 +40,11 @@ Based on the 2024 UK General Election featuring:
 - **Realistic Regional Patterns**: Scotland, Wales, urban/rural England variations
 - **Authentic Policy Simulation**: "UK Rejoining the EU" referendum scenario
 
-### ⚡ **Multiple Simulation Modes**
-- **Quick Demo**: 3-second rounds for rapid testing and demonstrations
-- **Full Simulation**: 30-second rounds for realistic election timing
-- **Visualization Suite**: Complete analysis with charts and graphs
+### ⚡ **Multiple Interface Options**
+- **🌐 Web Interface**: Modern browser-based application with real-time simulations
+- **💻 Command Line**: Quick demo (3-second rounds) for rapid testing
+- **📊 Full Simulation**: 30-second rounds for realistic election timing
+- **📈 Visualization Suite**: Complete analysis with charts and graphs
 
 ## 🔬 Why Weighted Voting?
 
@@ -78,7 +80,15 @@ Based on the 2024 UK General Election featuring:
    pip install -r requirements.txt
    ```
 
-3. **Run simulations**
+3. **Choose your interface**
+
+   **🌐 Web Interface (Recommended)**
+   ```bash
+   python app.py
+   ```
+   Then open http://localhost:5000 in your browser
+   
+   **💻 Command Line Interface**
    
    **Quick Demo (3-second rounds):**
    ```bash
