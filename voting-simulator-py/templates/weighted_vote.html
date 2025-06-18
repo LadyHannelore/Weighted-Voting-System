@@ -390,9 +390,7 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        async function showChart(chartType) {
+        }        async function showChart(chartType) {
             if (!simulationData) {
                 alert('Please run a simulation first!');
                 return;
@@ -411,9 +409,22 @@
                 const response = await fetch(`/api/generate-chart/${chartType}`);
                 
                 if (response.ok) {
-                    const chartHtml = await response.text();
-                    chartContainer.innerHTML = `<iframe srcdoc="${chartHtml.replace(/"/g, '&quot;')}" 
-                                                       style="width: 100%; height: 100%; border: none;"></iframe>`;
+                    const data = await response.json();
+                    
+                    if (data.success && data.chart_url) {
+                        // Use iframe with src pointing to the chart URL
+                        chartContainer.innerHTML = `<iframe src="${data.chart_url}" 
+                                                           style="width: 100%; height: 100%; border: none;"></iframe>`;
+                    } else {
+                        chartContainer.innerHTML = `
+                            <div class="d-flex align-items-center justify-content-center h-100 text-danger">
+                                <div class="text-center">
+                                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                                    <div>Chart generation failed: ${data.error || 'Unknown error'}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
                 } else {
                     chartContainer.innerHTML = `
                         <div class="d-flex align-items-center justify-content-center h-100 text-danger">

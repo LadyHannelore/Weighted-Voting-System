@@ -3,12 +3,13 @@ Flask web application for the UK Weighted Voting System.
 Provides an interactive web interface for running voting simulations.
 """
 
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, Response
 import os
 import tempfile
 import threading
 import time
 import random
+import uuid
 
 from vote_types import (
     Candidate, VoterProfile, WeightCoefficients, Results
@@ -444,6 +445,9 @@ def api_election_progress():
     return jsonify(response_data)
 
 
+# Global variable to store generated chart files
+chart_cache = {}
+
 @app.route('/api/generate-chart/<chart_type>')
 def api_generate_chart(chart_type):
     """Generate and return chart data."""
@@ -487,12 +491,15 @@ def api_generate_chart(chart_type):
             return jsonify({'error': f'Unknown chart type: {chart_type}'}), 404
 
         if chart is not None and hasattr(chart, 'to_html'):
-            # Save to temporary file and return
-            temp_file = tempfile.NamedTemporaryFile(
-                mode='w', suffix='.html', delete=False, encoding='utf-8')
-            temp_file.write(chart.to_html())
-            temp_file.close()
-            return send_file(temp_file.name, as_attachment=False, mimetype='text/html')
+            # Generate unique filename and store in cache
+            chart_id = str(uuid.uuid4())
+            chart_cache[chart_id] = chart.to_html()
+            
+            # Return JSON with chart URL instead of HTML
+            return jsonify({
+                'success': True,
+                'chart_url': f'/chart/{chart_id}'
+            })
         else:
             return jsonify(
                 {'error': 'Chart generation failed or chart object is invalid'}), 500
@@ -503,6 +510,15 @@ def api_generate_chart(chart_type):
         print(f"Chart generation error for {chart_type}: {error_details}")
         return jsonify({'error': f'Chart generation error: {str(e)}',
                        'details': error_details}), 500
+
+
+@app.route('/chart/<chart_id>')
+def serve_chart(chart_id):
+    """Serve cached chart HTML."""
+    if chart_id in chart_cache:
+        return Response(chart_cache[chart_id], mimetype='text/html')
+    else:
+        return "Chart not found", 404
 
 
 if __name__ == '__main__':
