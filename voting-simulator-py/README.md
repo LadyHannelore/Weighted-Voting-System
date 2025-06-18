@@ -1,6 +1,6 @@
-# Weighted Voting System
+# UK Weighted Voting System
 
-A Python-based simulator for advanced voting systems with weighted voter profiles, designed to account for voter expertise, participation, and other factors in governance decisions.
+A Python-based simulator for advanced voting systems modeled on UK election data, designed to account for voter expertise, participation, and other factors in governance decisions. This simulator uses real data from the 2024 UK General Election to model both ranked choice voting and weighted yes/no policy decisions.
 
 ## Features
 
@@ -14,6 +14,16 @@ A Python-based simulator for advanced voting systems with weighted voter profile
 - **Ranked Choice Voting**: Implements a single transferable vote (STV) style election system where voters rank candidates in order of preference.
 
 - **Customizable Weights**: Define coefficient weights for different voter attributes to reflect their importance in the voting process.
+
+- **Real-time Simulation**: Each round in ranked choice voting lasts 30 seconds (configurable), showing live results as the election progresses.
+
+- **Interactive Visualizations**: Automatic generation of charts and graphs including:
+  - Weighted vote comparison charts
+  - Ranked choice progression visualizations  
+  - Voter profile heatmaps
+  - First preference distribution pie charts
+
+- **System Verification**: Built-in verification that the voting algorithms follow proper ranked choice and weighted voting principles.
 
 ## Why Weighted Voting?
 
@@ -46,33 +56,109 @@ Edit `main.py` to:
 3. Specify bounds for normalization
 4. Configure yes/no votes or ranked ballots
 
-Example configuration:
+Example configuration with UK demographic voter profiles:
 
 ```python
-# Define voter profiles with raw scores for each attribute
+# UK voter profiles based on demographic segments
 profiles = [
-    VoterProfile(id='alice', E=8, P=50, D=7, A=9, S=100),
-    VoterProfile(id='bob', E=5, P=20, D=6, A=4, S=50),
-    VoterProfile(id='carol', E=9, P=80, D=8, A=8, S=75)
+    # Urban professionals 
+    VoterProfile(id='urban_professionals', E=8, P=70, D=7, A=6, S=80),
+    # Rural communities
+    VoterProfile(id='rural_voters', E=7, P=75, D=8, A=7, S=90),
+    # University students
+    VoterProfile(id='students', E=6, P=40, D=5, A=6, S=85),
+    # Retirees
+    VoterProfile(id='retirees', E=7, P=90, D=8, A=7, S=95)
 ]
 
 # Set weight coefficients (should sum to 1)
 coeffs = WeightCoefficients(
-    wE=0.3, wP=0.2, wD=0.3, wA=0.1, wS=0.1
+    wE=0.2, wP=0.2, wD=0.2, wA=0.2, wS=0.2
 )
 ```
 
+The simulation includes real UK political parties:
+- Conservative and Unionist Party
+- Labour Party
+- Liberal Democrats
+- Reform UK
+- Green Party
+- Scottish National Party
+- Plaid Cymru
+
 ### Run the Simulation
 
+There are several ways to run the simulation:
+
+**Quick Demo (3-second rounds):**
+```
+python quick_demo.py
+```
+
+**Full Demo (30-second rounds):**
+```
+python full_demo.py
+```
+
+**Complete Simulation with Charts:**
 ```
 python run.py
 ```
 
+**Note:** The full simulation includes 30-second rounds for each elimination in ranked choice voting, making it more realistic but slower. Use the quick demo for testing.
+
 ### Understanding Results
 
-The simulator outputs:
-- For Yes/No votes: Whether the motion passed, and the weighted totals
-- For ranked choice elections: The winner and details for each elimination round
+The simulator provides detailed outputs for two types of simulations:
+
+#### 1. Weighted Yes/No Policy Vote
+
+Simulates a policy decision (like "UK Rejoining the EU") with different demographic groups voting yes or no. The system runs three different weighting scenarios:
+- Equal weights across all voter attributes
+- Expertise-focused weights
+- Stake-focused weights
+
+For each scenario, the simulator outputs:
+- Whether the motion passed (based on weighted majority)
+- The total weighted votes for Yes and No
+- The percentage breakdown of the vote
+
+Example output:
+```
+SIMULATION 1: WEIGHTED YES/NO VOTE ON 'UK REJOINING THE EU'
+=================================================
+
+Voting Groups:
+YES voters: urban_professionals, students, young_professionals, public_sector, first_time_voters
+NO voters: rural_voters, retirees, working_class, business_owners
+
+1. Equal weights:
+   Passed? True
+   YES: 3.220 (51.1%)
+   NO:  3.080 (48.9%)
+```
+
+#### 2. Ranked Choice Voting
+
+Simulates a general election using the ranked choice (alternative vote) system with UK political parties. The simulator outputs:
+- The ultimate winner after all elimination rounds
+- Round-by-round vote tallies showing:
+  - Each party's vote count and percentage
+  - Which party was eliminated in each round
+  - How votes transfer between rounds
+
+Example output:
+```
+Round 1:
+  Labour Party: 75 votes (35.7%)
+  Conservative and Unionist Party: 50 votes (23.8%)
+  Green Party: 30 votes (14.3%)
+  Liberal Democrats: 25 votes (11.9%)
+  Reform UK: 15 votes (7.1%)
+  Scottish National Party: 10 votes (4.8%)
+  Plaid Cymru: 5 votes (2.4%)
+  Eliminated: Plaid Cymru
+```
 
 ## Customization
 
