@@ -98,11 +98,8 @@ def run_election(
                 winner = candidate_map.get(cid)
                 if winner:
                     print(
-                        f"\n🎉 WINNER: {
-                            winner.name} with {votes} votes ({
-                            votes /
-                            total_votes *
-                            100:.1f}%)")
+                        f"\n🎉 WINNER: {winner.name} with {votes} votes ({votes / total_votes * 100:.1f}%)"
+                    )
                 return Results(
                     winner=winner,
                     round_details=rounds
