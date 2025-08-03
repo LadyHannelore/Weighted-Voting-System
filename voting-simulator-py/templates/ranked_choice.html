@@ -114,6 +114,31 @@
                                 Time between elimination rounds in the election
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label for="ruleSelect" class="form-label">Voting Rule</label>
+                            <select id="ruleSelect" class="form-select">
+                                <option value="instant_runoff" selected>Instant Runoff Voting (IRV)</option>
+                                <option value="plurality">Plurality</option>
+                                <option value="anti_plurality">Anti-plurality</option>
+                                <option value="borda_count">Borda Count</option>
+                                <option value="dowdall">Dowdall (Harmonic Borda)</option>
+                                <option value="veto">Veto</option>
+                                <option value="two_round_runoff">Two-round Runoff</option>
+                                <option value="coombs">Coombs Method</option>
+                                <option value="bucklin">Bucklin</option>
+                                <option value="baldwin">Baldwin Elimination</option>
+                                <option value="nanson">Nanson Elimination</option>
+                                <option value="minimax">Minimax</option>
+                                <option value="copeland">Copeland</option>
+                                <option value="black_rule">Black's Rule</option>
+                                <option value="ranked_pairs">Ranked Pairs</option>
+                                <option value="schulze_method">Schulze Method</option>
+                                <option value="kemeny_young">Kemeny–Young</option>
+                                <option value="dodgson">Dodgson</option>
+                                <option value="young">Young</option>
+                                <option value="random_dictatorship">Random Dictatorship</option>
+                            </select>
+                        </div>
 
                         <button class="btn btn-success btn-lg w-100" onclick="runElection()">
                             <i class="fas fa-play me-2"></i>Start Election
@@ -345,12 +370,13 @@
             
             try {
                 // Start the timed election
+                const selectedRule = document.getElementById('ruleSelect').value;
                 const response = await fetch('/api/run-ranked-choice-timed', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ round_duration: roundDuration })
+                    body: JSON.stringify({ round_duration: roundDuration, rule: selectedRule })
                 });
 
                 const data = await response.json();

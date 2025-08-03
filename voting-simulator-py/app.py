@@ -21,6 +21,13 @@ from visualization import (
     create_voter_profile_heatmap,
     create_first_preferences_pie_chart
 )
+from voting_systems import (
+    plurality, anti_plurality, borda_count, dowdall, veto,
+    five_three_one, two_round_runoff, instant_runoff, coombs, bucklin,
+    baldwin, nanson, minimax, copeland, black_rule,
+    smith_irv, ranked_pairs, schulze_method, kemeny_young,
+    dodgson, young, random_dictatorship
+)
 
 app = Flask(__name__)
 
@@ -31,6 +38,31 @@ simulation_state = {
     'current_round': 0,
     'is_running': False,
     'round_duration': 5  # Default 5 seconds for web interface
+}
+# Mapping rule names to functions for ranking-based rules
+rule_funcs = {
+    'plurality': plurality,
+    'anti_plurality': anti_plurality,
+    'borda_count': borda_count,
+    'dowdall': dowdall,
+    'veto': veto,
+    'five_three_one': five_three_one,
+    'two_round_runoff': two_round_runoff,
+    'instant_runoff': instant_runoff,
+    'coombs': coombs,
+    'bucklin': bucklin,
+    'baldwin': baldwin,
+    'nanson': nanson,
+    'minimax': minimax,
+    'copeland': copeland,
+    'black_rule': black_rule,
+    'smith_irv': smith_irv,
+    'ranked_pairs': ranked_pairs,
+    'schulze_method': schulze_method,
+    'kemeny_young': kemeny_young,
+    'dodgson': dodgson,
+    'young': young,
+    'random_dictatorship': random_dictatorship
 }
 
 
@@ -245,6 +277,7 @@ def api_run_ranked_choice():
     try:
         data = request.get_json()
         round_duration = data.get('round_duration', 5)
+        rule = data.get('rule', 'instant_runoff')
 
         # Get parties and voter profiles
         candidates = get_uk_parties()
@@ -256,8 +289,13 @@ def api_run_ranked_choice():
         simulation_state['current_round'] = 0
         simulation_state['round_duration'] = round_duration
 
-        # Run the election using web-optimized function
-        results = run_election_web(candidates, ballots)
+        # Run the selected voting rule
+        func = rule_funcs.get(rule)
+        if func:
+            # For rules expecting (candidates, ballots)
+            results = func(candidates, ballots)
+        else:
+            results = run_election_web(candidates, ballots)
 
         # Store results
         simulation_state['ranked_results'] = results
@@ -292,12 +330,19 @@ def api_run_ranked_choice_timed():
     try:
         data = request.get_json()
         round_duration = data.get('round_duration', 5)
+        rule = data.get('rule', 'instant_runoff')
 
         # Get parties and voter profiles
         candidates = get_uk_parties()
         voter_profiles = get_voter_profiles()
         ballots = generate_ballots_for_election(candidates, voter_profiles)
 
+        # Precompute full results for selected rule
+        func = rule_funcs.get(rule)
+        if func:
+            full_results = func(candidates, ballots)
+        else:
+            full_results = run_election_web(candidates, ballots)
         # Reset simulation state
         simulation_state['is_running'] = True
         simulation_state['current_round'] = 0
@@ -305,89 +350,19 @@ def api_run_ranked_choice_timed():
         simulation_state['ranked_results'] = None
         simulation_state['current_results'] = []
 
-        # Start the election in a separate thread
+        # Start animation thread: reveal one round at a time
         def run_timed_election():
             global simulation_state
-
-            if not candidates or not ballots:
-                simulation_state['ranked_results'] = Results(
-                    winner=None, round_details=[])
-                simulation_state['is_running'] = False
-                return
-
-            # Build a lookup for candidates by ID
-            candidate_map = {c.id: c for c in candidates}
-
-            # Track rounds
-            rounds = []
-            remaining_candidates = set(c.id for c in candidates)
-
-            # Continue until we have a winner
-            round_num = 1
-            while remaining_candidates and len(
-                    remaining_candidates) > 1 and simulation_state['is_running']:
-                simulation_state['current_round'] = round_num
-
-                # Count first preferences of all valid ballots
-                tallies = {cid: 0 for cid in remaining_candidates}
-
-                for ballot in ballots:
-                    # Find the first preference that's still in the running
-                    for choice in ballot:
-                        if choice in remaining_candidates:
-                            tallies[choice] += 1
-                            break
-
-                # Record this round
-                round_detail = {
-                    "round": round_num,
-                    "tallies": tallies.copy()
-                }
-
-                # Check for a majority winner
-                total_votes = sum(tallies.values())
-                for cid, votes in tallies.items():
-                    if votes > total_votes / 2:
-                        # We have a winner
-                        rounds.append(round_detail)
-                        winner = candidate_map.get(cid)
-                        simulation_state['ranked_results'] = Results(
-                            winner=winner,
-                            round_details=rounds
-                        )
-                        simulation_state['is_running'] = False
-                        return
-
-                # No winner yet, eliminate lowest candidate
-                candidates_by_votes = sorted(
-                    tallies.items(), key=lambda x: (x[1], x[0]))
-                if candidates_by_votes:
-                    to_eliminate = candidates_by_votes[0][0]
-                    round_detail["eliminated"] = to_eliminate
-                    remaining_candidates.remove(to_eliminate)
-
-                rounds.append(round_detail)
-
-                # Update the current state with this round
-                simulation_state['current_results'] = rounds.copy()
-
-                # Wait for round duration
+            for rd in full_results.round_details:
+                if not simulation_state['is_running']:
+                    break
+                simulation_state['current_results'].append(rd)
+                simulation_state['current_round'] = rd.get('round', len(simulation_state['current_results']))
                 time.sleep(round_duration)
-                round_num += 1
-
-            # Final result
-            winner = None
-            if remaining_candidates:
-                winner_id = list(remaining_candidates)[0]
-                winner = candidate_map.get(winner_id)
-
-            simulation_state['ranked_results'] = Results(
-                winner=winner,
-                round_details=rounds
-            )
+            # Animation done
             simulation_state['is_running'] = False
+            simulation_state['ranked_results'] = full_results
 
-        # Start the election thread
         election_thread = threading.Thread(target=run_timed_election)
         election_thread.daemon = True
         election_thread.start()
