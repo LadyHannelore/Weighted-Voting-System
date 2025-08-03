@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, TypedDict
+from typing import Dict, List, Optional, TypedDict, Any
 from dataclasses import dataclass
 
 
@@ -14,7 +14,8 @@ Ballot = List[str]
 
 class RoundDetail(TypedDict):
     round: int
-    tallies: Dict[str, int]
+    # tallies may be numeric counts or scores
+    tallies: Dict[str, Any]
     eliminated: Optional[str]
 
 
